@@ -1,4 +1,4 @@
-module github.com/huin/goupnp
+module github.com/fanhai/goupnp
 
 go 1.14
 

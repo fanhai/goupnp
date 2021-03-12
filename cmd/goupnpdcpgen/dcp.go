@@ -7,8 +7,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/huin/goupnp"
-	"github.com/huin/goupnp/scpd"
+	"github.com/fanhai/goupnp"
+	"github.com/fanhai/goupnp/scpd"
 	"github.com/huin/goutil/codegen"
 )
 

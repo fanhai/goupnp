@@ -7,6 +7,8 @@ import (
 	"net/url"
 	"strconv"
 	"time"
+
+	"github.com/fanhai/goupnp/httpu"
 )
 
 const (
@@ -31,7 +33,7 @@ type HTTPUClient interface {
 		req *http.Request,
 		timeout time.Duration,
 		numSends int,
-	) ([]*http.Response, error)
+	) ([]*httpu.FoundResponse, error)
 }
 
 // SSDPRawSearch performs a fairly raw SSDP search request, and returns the
@@ -46,7 +48,7 @@ func SSDPRawSearch(
 	searchTarget string,
 	maxWaitSeconds int,
 	numSends int,
-) ([]*http.Response, error) {
+) ([]*httpu.FoundResponse, error) {
 	if maxWaitSeconds < 1 {
 		return nil, errors.New("ssdp: maxWaitSeconds must be >= 1")
 	}
@@ -73,7 +75,7 @@ func SSDPRawSearch(
 	isExactSearch := searchTarget != SSDPAll && searchTarget != UPNPRootDevice
 
 	seenUSNs := make(map[string]bool)
-	var responses []*http.Response
+	var responses []*httpu.FoundResponse
 	for _, response := range allResponses {
 		if response.StatusCode != 200 {
 			log.Printf("ssdp: got response status code %q in search response", response.Status)

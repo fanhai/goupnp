@@ -28,16 +28,16 @@ func (mc *MultiClient) Do(
 	req *http.Request,
 	timeout time.Duration,
 	numSends int,
-) ([]*http.Response, error) {
+) ([]*FoundResponse, error) {
 	tasks := &errgroup.Group{}
 
-	results := make(chan []*http.Response)
+	results := make(chan []*FoundResponse)
 	tasks.Go(func() error {
 		defer close(results)
 		return mc.sendRequests(results, req, timeout, numSends)
 	})
 
-	var responses []*http.Response
+	var responses []*FoundResponse
 	tasks.Go(func() error {
 		for rs := range results {
 			responses = append(responses, rs...)
@@ -49,14 +49,14 @@ func (mc *MultiClient) Do(
 }
 
 func (mc *MultiClient) sendRequests(
-	results chan<-[]*http.Response,
+	results chan<- []*FoundResponse,
 	req *http.Request,
 	timeout time.Duration,
 	numSends int,
 ) error {
 	tasks := &errgroup.Group{}
 	for _, d := range mc.delegates {
-		d := d  // copy for closure
+		d := d // copy for closure
 		tasks.Go(func() error {
 			responses, err := d.Do(req, timeout, numSends)
 			if err != nil {

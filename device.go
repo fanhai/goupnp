@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/huin/goupnp/scpd"
-	"github.com/huin/goupnp/soap"
+	"github.com/fanhai/goupnp/scpd"
+	"github.com/fanhai/goupnp/soap"
 )
 
 const (

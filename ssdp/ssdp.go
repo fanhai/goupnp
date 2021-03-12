@@ -44,7 +44,7 @@ type HTTPUClient interface {
 // reasonable value for this. numSends is the number of requests to send - 3 is
 // a reasonable value for this.
 func SSDPRawSearch(
-	httpu HTTPUClient,
+	httpuclient HTTPUClient,
 	searchTarget string,
 	maxWaitSeconds int,
 	numSends int,
@@ -67,7 +67,7 @@ func SSDPRawSearch(
 			"ST":   []string{searchTarget},
 		},
 	}
-	allResponses, err := httpu.Do(&req, time.Duration(maxWaitSeconds)*time.Second+100*time.Millisecond, numSends)
+	allResponses, err := httpuclient.Do(&req, time.Duration(maxWaitSeconds)*time.Second+100*time.Millisecond, numSends)
 	if err != nil {
 		return nil, err
 	}

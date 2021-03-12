@@ -152,7 +152,7 @@ func (httpu *HTTPUClient) Do(
 			continue
 		}
 
-		responses = append(responses, &FoundResponse{Response: response})
+		responses = append(responses, &FoundResponse{Response: response, Localaddr: httpu.conn.LocalAddr()})
 	}
 
 	// Timeout reached - return discovered responses.

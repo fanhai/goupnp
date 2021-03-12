@@ -12,6 +12,11 @@ import (
 	"time"
 )
 
+type FoundResponse struct {
+	*http.Response
+	Localaddr net.Addr
+}
+
 // ClientInterface is the general interface provided to perform HTTP-over-UDP
 // requests.
 type ClientInterface interface {
@@ -23,7 +28,7 @@ type ClientInterface interface {
 		req *http.Request,
 		timeout time.Duration,
 		numSends int,
-	) ([]*http.Response, error)
+	) ([]*FoundResponse, error)
 }
 
 // HTTPUClient is a client for dealing with HTTPU (HTTP over UDP). Its typical
@@ -75,7 +80,7 @@ func (httpu *HTTPUClient) Do(
 	req *http.Request,
 	timeout time.Duration,
 	numSends int,
-) ([]*http.Response, error) {
+) ([]*FoundResponse, error) {
 	httpu.connLock.Lock()
 	defer httpu.connLock.Unlock()
 
@@ -117,12 +122,16 @@ func (httpu *HTTPUClient) Do(
 	}
 
 	// Await responses until timeout.
-	var responses []*http.Response
+	var responses []*FoundResponse
 	responseBytes := make([]byte, 2048)
 	for {
 		// 2048 bytes should be sufficient for most networks.
-		n, _, err := httpu.conn.ReadFrom(responseBytes)
+		n, _addr, err := httpu.conn.ReadFrom(responseBytes)
 		if err != nil {
+			if _addr != nil {
+				fmt.Println(_addr)
+			}
+
 			if err, ok := err.(net.Error); ok {
 				if err.Timeout() {
 					break
@@ -143,7 +152,7 @@ func (httpu *HTTPUClient) Do(
 			continue
 		}
 
-		responses = append(responses, response)
+		responses = append(responses, &FoundResponse{Response: response})
 	}
 
 	// Timeout reached - return discovered responses.
